@@ -1,0 +1,7 @@
+# main holds only the GitHub profile README.
+# The website lives on the `website` branch; these are its local build files and private CV sources.
+/node_modules
+/.next/
+/cv/
+next-env.d.ts
+*.tsbuildinfo
