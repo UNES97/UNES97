@@ -11,12 +11,6 @@
   <img src="https://img.shields.io/badge/Experience-6%2B%20years-2A3BFF?style=for-the-badge" alt="6+ years of experience" />
 </p>
 
-### 🧭 Previously on…
-
-- 🚀 **Lead Software Engineer at Maxmind.ma**, taking products from first requirement to production, and beyond.
-- 🏢 Through Maxmind: enterprise work for **Maersk – APM Terminals**, **Checkinfo** and **Forvis Mazars**.
-- 🤖 Building with **LLMs, RAG and AI agents** (LangChain, Transformers, MCP) and shipping them as real features.
-
 <br />
 
 <picture>
