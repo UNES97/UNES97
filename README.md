@@ -24,7 +24,7 @@
 - 🛠️ Full-stack software engineer with **6+ years** building web applications, business platforms, APIs and enterprise solutions.
 - 🚀 **Lead Software Engineer at Maxmind.ma** since 2024: I take projects from requirements and technical planning through development, deployment and continuous improvement.
 - 🏢 Through Maxmind, I've contributed to enterprise initiatives for **Maersk – APM Terminals**, **Checkinfo** and **Forvis Mazars**.
-- 🤖 Currently exploring **applied AI** (LangChain, Transformers) and how it makes real products more useful.
+- 🤖 Deep into **applied AI**: building with LLMs, RAG pipelines and AI agents (LangChain, Transformers, Model Context Protocol), and turning them into features people actually use.
 - 💡 I care about understanding the problem first, making the right technical decisions and building software that lasts.
 
 ### 🧰 Tech I work with
