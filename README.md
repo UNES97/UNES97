@@ -13,23 +13,15 @@
 
 ### 🧭 Previously on…
 
-- 🚀 **Lead Software Engineer at Maxmind.ma** since 2024: I take products from the first requirement to production, and keep improving them after launch.
-- 🏢 Through Maxmind, I've contributed to enterprise initiatives for **Maersk – APM Terminals**, **Checkinfo** and **Forvis Mazars**.
-- 🤖 Deep into **applied AI**: building with LLMs, RAG pipelines and AI agents (LangChain, Transformers, Model Context Protocol), and turning them into features people actually use.
-- 💡 I care about understanding the problem first, making the right technical decisions and building software that lasts.
+- 🚀 **Lead Software Engineer at Maxmind.ma**, taking products from first requirement to production, and beyond.
+- 🏢 Through Maxmind: enterprise work for **Maersk – APM Terminals**, **Checkinfo** and **Forvis Mazars**.
+- 🤖 Building with **LLMs, RAG and AI agents** (LangChain, Transformers, MCP) and shipping them as real features.
 
 <br />
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="assets/select-dark.svg" />
   <img src="assets/select-light.svg" width="100%" alt="Player select: Younes Noufair, Lead Software Engineer. Stats: PHP, JavaScript, REST APIs, SQL, Python. Special moves across backend, frontend, data and DevOps." />
-</picture>
-
-<br /><br />
-
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="assets/quests-dark.svg" />
-  <img src="assets/quests-light.svg" width="100%" alt="Quest log: DTS, Licence, Version Digitale, Software Engineer at Maxmind, Lead Software Engineer (in progress), and the applied AI arc next." />
 </picture>
 
 <br /><br />
