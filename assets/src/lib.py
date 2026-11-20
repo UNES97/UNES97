@@ -11,7 +11,6 @@ from __future__ import annotations
 
 import base64
 import io
-import subprocess
 import urllib.request
 from pathlib import Path
 
@@ -41,20 +40,17 @@ THEMES = {
 
 # ───────────────────────── fonts ─────────────────────────
 # JX = Plus Jakarta Sans ExtraBold (800), JS = SemiBold (600), JP = Noto Sans JP Black (900, for katakana).
-_WEBSITE_FONTS = {"JX": "src/app/fonts/PlusJakartaSans-ExtraBold.ttf", "JS": "src/app/fonts/PlusJakartaSans-SemiBold.ttf"}
+VENDOR = Path(__file__).resolve().parent / "vendor"
+_LOCAL_FONTS = {"JX": "PlusJakartaSans-ExtraBold.ttf", "JS": "PlusJakartaSans-SemiBold.ttf"}
 _JP_URL = "https://github.com/google/fonts/raw/main/ofl/notosansjp/NotoSansJP%5Bwght%5D.ttf"
 _raw: dict[str, bytes] = {}
-
-
-def _git_show(path: str) -> bytes:
-    return subprocess.run(["git", "show", f"website:{path}"], cwd=ROOT, capture_output=True, check=True).stdout
 
 
 def font_bytes(key: str) -> bytes:
     if key in _raw:
         return _raw[key]
-    if key in _WEBSITE_FONTS:
-        _raw[key] = _git_show(_WEBSITE_FONTS[key])
+    if key in _LOCAL_FONTS:
+        _raw[key] = (VENDOR / _LOCAL_FONTS[key]).read_bytes()
     elif key == "JP":
         CACHE.mkdir(exist_ok=True)
         static = CACHE / "NotoSansJP-Black.ttf"
@@ -116,7 +112,7 @@ def photo_duotone(theme: str, size: int = 520) -> str:
     """Younes's portrait as a two-tone image (ink shadows → cobalt/lilac highlights), base64 JPEG data URI."""
     from PIL import Image, ImageOps
 
-    raw = _git_show("src/assets/photo.jpg")
+    raw = (VENDOR / "photo.jpg").read_bytes()
     im = Image.open(io.BytesIO(raw)).convert("L").resize((size, size), Image.LANCZOS)
     im = ImageOps.autocontrast(im, cutoff=1)
     t = THEMES[theme]
