@@ -1,5 +1,6 @@
 """
-Scene "card": the whole profile in one calm, animated card (title + stats + call to action).
+Scene "card": the whole profile in one calm, animated card (title + tech loadout grid + call to action).
+The loadout's select cursor walks over every tile in turn, lighting each logo in its brand colour.
 
     python assets/src/scene_card.py      # -> assets/card-light.svg, assets/card-dark.svg
 
@@ -9,13 +10,14 @@ Every element's resting state is its final state, so with animations off (or red
 """
 from __future__ import annotations
 
+import json
 import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from lib import THEMES, W, Metrics, esc, font_css, photo_duotone, write  # noqa: E402
 
-H = 600
+H = 800
 PAD = 40
 EASE = "cubic-bezier(.22,1,.36,1)"
 
@@ -27,19 +29,23 @@ KANA = "ユネス"
 ROLE_A, ROLE_B, ROLE_C = "Lead Software Engineer @ ", "Maxmind.ma", "  ·  Casablanca"
 TAG = [("I", "ink"), ("build", "ink"), ("software", "ink"), ("that", "ink"), ("connects", "ink"),
        ("ideas", "cobalt"), ("to", "ink"), ("reality.", "cobalt")]
-STATS_T, MOVES_T = "STATS", "SPECIAL MOVES"
-STATS = [("PHP", 80), ("JAVASCRIPT", 80), ("REST APIS", 80), ("SQL", 80), ("PYTHON", 70)]
-MOVES = [
-    ("Ideas → Reality", "Full-stack · web apps & APIs"),
-    ("Schema Slash", "MySQL · PostgreSQL · MongoDB"),
-    ("Deploy Dash", "Docker · Linux · Apache"),
-    ("Prompt Combo", "LangChain · LLMs · RAG"),
+GRID_T, GRID_R = "LOADOUT", "SELECT YOUR STACK"
+# rows of (category, [(icon slug, label)]); icons: Simple Icons (CC0), vendored in vendor/icons.json
+GRID = [
+    ("BACKEND", [("php", "PHP"), ("symfony", "Symfony"), ("laravel", "Laravel"), ("codeigniter", "CodeIgniter"),
+                 ("nodedotjs", "Node.js"), ("express", "Express"), ("python", "Python")]),
+    ("FRONTEND", [("javascript", "JavaScript"), ("typescript", "TypeScript"), ("react", "React"), ("nextdotjs", "Next.js"),
+                  ("vuedotjs", "Vue.js"), ("tailwindcss", "Tailwind"), ("html5", "HTML5"), ("css", "CSS"), ("jquery", "jQuery")]),
+    ("DATA · AI", [("mysql", "MySQL"), ("postgresql", "PostgreSQL"), ("mongodb", "MongoDB"), ("redis", "Redis"),
+                   None, ("huggingface", "Transformers"), ("langchain", "LangChain"), ("modelcontextprotocol", "MCP")]),
+    ("DEVOPS", [("docker", "Docker"), ("linux", "Linux"), ("apache", "Apache"), ("git", "Git"), ("coolify", "Coolify")]),
 ]
+ICONS = json.loads((Path(__file__).resolve().parent / "vendor" / "icons.json").read_text(encoding="utf-8"))
 TBC, TBC_JP = "TO BE CONTINUED", "つづく"
 CTA = "PRESS START TO COLLABORATE"
 
-ALL_TEXT = "".join([HANDLE, EP, NAME1, NAME2, KANA, ROLE_A, ROLE_B, ROLE_C, *[w for w, _ in TAG],
-                    STATS_T, MOVES_T, *[s for s, _ in STATS], *[a + b for a, b in MOVES], TBC, TBC_JP, CTA, "0123456789"])
+ALL_TEXT = "".join([HANDLE, EP, NAME1, NAME2, KANA, ROLE_A, ROLE_B, ROLE_C, *[w for w, _ in TAG], GRID_T, GRID_R,
+                    *[c + "".join(x[1] for x in row if x) for c, row in GRID], TBC, TBC_JP, CTA, "0123456789"])
 
 MX, MS = Metrics("JX"), Metrics("JS")
 
@@ -49,11 +55,17 @@ Y_NAME1, Y_NAME2 = 168, 248
 Y_ROLE, Y_TAG = 290, 326
 TAG_SIZE = 20
 PH_X, PH_Y, PH_S = 586, 92, 204       # portrait square
-DIV1, DIV2 = 362, 526
-SEC_Y = 396                            # section labels
-ROW0, STAT_STEP, MOVE_STEP = 426, 21, 24
-BAR_X0, BAR_X1 = 150, 352
-COL2 = 440
+DIV1, DIV2 = 362, 724
+SEC_Y = 396                            # section label
+TILE, GAP = 64, 8                      # tech tiles
+GRID_X, GRID_Y = W - PAD - 9 * TILE - 8 * GAP, 416
+STEP = .42                             # seconds the select cursor rests on each tile
+FY = 768                               # footer baseline
+
+
+def lum(hex_: str) -> float:
+    r, g, b = (int(hex_[i:i + 2], 16) / 255 for i in (1, 3, 5))
+    return .2126 * r + .7152 * g + .0722 * b
 
 
 def anim(name: str, dur: float, delay: float, extra: str = "") -> str:
@@ -135,49 +147,55 @@ def build(theme: str) -> str:
              f'fill="{t["on_cobalt"]}" letter-spacing="1">{KANA}</text></g>')
 
     # dividers (draw in)
-    for y, d in ((DIV1, 1.2), (DIV2, 2.0)):
+    for y, d in ((DIV1, 1.2), (DIV2, 2.2)):
         ln = W - 2 * PAD
         o.append(f'<line x1="{PAD}" y1="{y}" x2="{W - PAD}" y2="{y}" stroke="{t["line"]}" stroke-dasharray="{ln}" '
                  f'style="--len:{ln};animation:draw 1.2s {EASE} {d}s both"/>')
 
-    # section labels
+    # tech grid ("loadout"): tiles wave in, then a select cursor walks over them one by one, forever
     o.append(f'<g {anim("fade", .8, 1.35)}>'
-             f'<text x="{PAD}" y="{SEC_Y}" class="jx" font-size="10" letter-spacing="2.6" fill="{t["ink3"]}">{STATS_T}</text>'
-             f'<text x="{COL2}" y="{SEC_Y}" class="jx" font-size="10" letter-spacing="2.6" fill="{t["ink3"]}">{MOVES_T}</text></g>')
-
-    # stats: slow fills
-    for i, (lab, val) in enumerate(STATS):
-        y = ROW0 + i * STAT_STEP
-        d = 1.5 + i * .12
-        bw = (BAR_X1 - BAR_X0) * val / 100
-        o.append(f'<g {anim("fade", .6, d)}>'
-                 f'<text x="{PAD}" y="{y}" class="jx" font-size="11" letter-spacing="1.2" fill="{t["ink2"]}">{lab}</text>'
-                 f'<rect x="{BAR_X0}" y="{y - 7}" width="{BAR_X1 - BAR_X0}" height="6" rx="3" fill="{t["line"]}"/>'
-                 f'<text x="{BAR_X1 + 46}" y="{y}" class="jx" font-size="11" text-anchor="end" fill="{t["ink"]}">{val}</text></g>')
-        o.append(f'<rect x="{BAR_X0}" y="{y - 7}" width="{bw:.1f}" height="6" rx="3" fill="{t["cobalt"]}" '
-                 f'style="transform-origin:{BAR_X0}px {y}px;animation:fill 1.4s {EASE} {d + .1:.2f}s both"/>')
-
-    # special moves
-    for i, (name, detail) in enumerate(MOVES):
-        y = ROW0 + i * MOVE_STEP
-        o.append(f'<g {anim("up", .8, 1.6 + i * .1)}>'
-                 f'<text x="{COL2}" y="{y}" class="jx" font-size="11" fill="{t["cobalt"]}">0{i + 1}</text>'
-                 f'<text x="{COL2 + 26}" y="{y}" class="jx" font-size="14" fill="{t["ink"]}">{esc(name)}</text>'
-                 f'<text x="{W - PAD}" y="{y}" class="js" font-size="12" text-anchor="end" fill="{t["ink3"]}">{esc(detail)}</text></g>')
+             f'<text x="{PAD}" y="{SEC_Y}" class="jx" font-size="10" letter-spacing="2.6" fill="{t["ink3"]}">{GRID_T}</text>'
+             f'<text x="{W - PAD}" y="{SEC_Y}" class="jx" font-size="10" letter-spacing="2.6" text-anchor="end" fill="{t["ink3"]}">{GRID_R}</text></g>')
+    tiles = [(r, c, item) for r, (_, row) in enumerate(GRID) for c, item in enumerate(row) if item]
+    n = len(tiles)
+    cyc = n * STEP
+    a, b, e = .12 * STEP / cyc * 100, 1.0 * STEP / cyc * 100, 1.7 * STEP / cyc * 100
+    o.insert(1, f'<style>@keyframes hl{{0%{{opacity:0}}{a:.2f}%,{b:.2f}%{{opacity:1}}{e:.2f}%,100%{{opacity:0}}}}</style>')
+    o.append("<defs>" + "".join(f'<symbol id="i-{s}" viewBox="0 0 24 24"><path d="{ICONS[s]["path"]}"/></symbol>'
+                                for _, _, (s, _) in tiles) + "</defs>")
+    for r, (cat, _) in enumerate(GRID):
+        y = GRID_Y + r * (TILE + GAP)
+        o.append(f'<text x="{PAD}" y="{y + TILE / 2 + 4}" class="jx" font-size="10" letter-spacing="2" fill="{t["ink2"]}" '
+                 f'{anim("fade", .8, 1.45 + r * .08)}>{esc(cat)}</text>')
+    start = 3.4
+    for i, (r, c, (slug, label)) in enumerate(tiles):
+        x, y = GRID_X + c * (TILE + GAP), GRID_Y + r * (TILE + GAP)
+        fs = min(9.0, 9.0 * (TILE - 8) / MS.width(label, 9))
+        brand = ICONS[slug]["hex"]
+        if theme == "dark" and lum(brand) < .3:
+            brand = t["ink"]
+        tile = (f'<use href="#i-{slug}" x="{x + TILE / 2 - 12}" y="{y + 11}" width="24" height="24" fill="{{ic}}"/>'
+                f'<text x="{x + TILE / 2}" y="{y + TILE - 12}" class="js" font-size="{fs:.1f}" text-anchor="middle" fill="{{lc}}">{esc(label)}</text>')
+        o.append(f'<g {anim("up", .8, 1.5 + r * .08 + c * .05)}>'
+                 f'<rect x="{x + .5}" y="{y + .5}" width="{TILE - 1}" height="{TILE - 1}" rx="14" fill="{t["panel"]}" stroke="{t["line"]}"/>'
+                 + tile.format(ic=t["ink2"], lc=t["ink3"]) + "</g>")
+        o.append(f'<g opacity="0" style="animation:hl {cyc:.2f}s ease-in-out {start + i * STEP:.2f}s infinite">'
+                 f'<rect x="{x + .75}" y="{y + .75}" width="{TILE - 1.5}" height="{TILE - 1.5}" rx="14" fill="{t["cobalt_soft"]}" '
+                 f'stroke="{t["cobalt"]}" stroke-width="1.5"/>' + tile.format(ic=brand, lc=t["ink"]) + "</g>")
 
     # footer: to be continued → / press start
-    fy = 570
+    fy = FY
     tw = MX.width(TBC, 13, 2.6)
     ax = PAD + tw + 16
     chev = "".join(f'<path d="M{ax + k * 9:.1f} {fy - 10} l5 5 l-5 5" fill="none" stroke="{t["cobalt"]}" stroke-width="2" '
                    f'stroke-linecap="round" stroke-linejoin="round" opacity="{1 - k * .3:.1f}"/>' for k in range(3))
-    o.append(f'<g {anim("up", .9, 2.3)}>'
+    o.append(f'<g {anim("up", .9, 2.5)}>'
              f'<text x="{PAD}" y="{fy}" class="jx" font-size="13" letter-spacing="2.6" fill="{t["ink"]}">{TBC}</text>'
              f'<g style="animation:nudge 2.4s ease-in-out 3.2s infinite">{chev}</g>'
              f'<text x="{ax + 40:.1f}" y="{fy + 1}" class="jp" font-size="14" fill="{t["ink3"]}">{TBC_JP}</text></g>')
     cw = MX.width(CTA, 12, 2.2)
     cx = W - PAD - 12
-    o.append(f'<g {anim("up", .9, 2.45)}>'
+    o.append(f'<g {anim("up", .9, 2.65)}>'
              f'<text x="{cx - 4}" y="{fy}" class="jx" font-size="12" letter-spacing="2.2" text-anchor="end" fill="{t["cobalt"]}">{CTA}</text>'
              f'<rect x="{cx + 2}" y="{fy - 12}" width="8" height="14" rx="1.5" fill="{t["cobalt"]}" '
              f'style="animation:blink 1.1s steps(1) 3s infinite"/></g>')

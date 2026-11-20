@@ -1,7 +1,7 @@
 <a href="https://www.linkedin.com/in/younes-noufair-579ab1191/">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="assets/card-dark.svg" />
-    <img src="assets/card-light.svg" width="100%" alt="Younes Noufair, Lead Software Engineer at Maxmind.ma, Casablanca. I build software that connects ideas to reality. Stats: PHP, JavaScript, REST APIs, SQL, Python. Special moves: full-stack web apps and APIs, databases, deployment, LLMs and RAG. Press start to collaborate." />
+    <img src="assets/card-light.svg" width="100%" alt="Younes Noufair, Lead Software Engineer at Maxmind.ma, Casablanca. I build software that connects ideas to reality. Stack. Backend: PHP, Symfony, Laravel, CodeIgniter, Node.js, Express, Python. Frontend: JavaScript, TypeScript, React, Next.js, Vue.js, Tailwind CSS, HTML5, CSS, jQuery. Data and AI: MySQL, PostgreSQL, MongoDB, Redis, Hugging Face Transformers, LangChain, Model Context Protocol. DevOps: Docker, Linux, Apache, Git, Coolify. Press start to collaborate." />
   </picture>
 </a>
 
