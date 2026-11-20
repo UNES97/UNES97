@@ -5,12 +5,6 @@
   </picture>
 </a>
 
-<p align="center">
-  <a href="https://www.linkedin.com/in/younes-noufair-579ab1191/"><img src="https://img.shields.io/badge/LinkedIn-Let's%20connect-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white" alt="LinkedIn" /></a>
-  <a href="mailto:noufair97@gmail.com"><img src="https://img.shields.io/badge/Email-noufair97%40gmail.com-0f1013?style=for-the-badge&logo=gmail&logoColor=white" alt="Email" /></a>
-  <img src="https://img.shields.io/badge/Experience-6%2B%20years-2A3BFF?style=for-the-badge" alt="6+ years of experience" />
-</p>
-
 <br />
 
 <picture>
