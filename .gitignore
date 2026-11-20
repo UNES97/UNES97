@@ -5,3 +5,5 @@
 /cv/
 next-env.d.ts
 *.tsbuildinfo
+/assets/src/.cache/
+__pycache__/
