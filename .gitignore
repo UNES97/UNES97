@@ -1,9 +1,4 @@
-# main holds only the GitHub profile README.
-# The website lives on the `website` branch; these are its local build files and private CV sources.
-/node_modules
-/.next/
-/cv/
-next-env.d.ts
-*.tsbuildinfo
+# This repo is the GitHub profile README. The website lives in github.com/UNES97/PORTFOLIO.
+# Local caches of the card generator (assets/src/scene_card.py):
 /assets/src/.cache/
 __pycache__/
